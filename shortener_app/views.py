@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseNotFound
-from .models import AliasedURL
+from django.shortcuts import redirect
+from shortener_app.models import AliasedURL
+from django.http import Http404
 
 # Create your views here.
-
-def redirect_view(request, alias):
-    url_mapping = get_object_or_404(AliasedURL, alias = alias)
-    return redirect(url_mapping.url)
+def redirect_view(req, alias):
+    try:
+        aliased_url = AliasedURL.objects.get(alias=alias)
+        return redirect(aliased_url.url)
+    except AliasedURL.DoesNotExist:
+        raise(Http404('Aliased URL does not exist'))
